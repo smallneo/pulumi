@@ -216,6 +216,8 @@ func NewPulumiCmd() *cobra.Command {
 	if hasExperimentalCommands() {
 		//     - Query Commands:
 		cmd.AddCommand(newQueryCmd())
+		//     - Import Commands:
+		cmd.AddCommand(newImportCmd())
 	}
 
 	// We have a set of options that are useful for developers of pulumi that we add when PULUMI_DEBUG_COMMANDS is
