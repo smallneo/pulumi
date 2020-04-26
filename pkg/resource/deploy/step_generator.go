@@ -1050,11 +1050,11 @@ func (sg *stepGenerator) diff(urn resource.URN, old, new *resource.State, oldInp
 		return plugin.DiffResult{Changes: plugin.DiffSome}, nil
 	}
 
-	return diffResource(urn, old.ID, oldInputs, oldOutputs, newInputs, prov, allowUnknowns, ignoreChanges)
+	return DiffResource(urn, old.ID, oldInputs, oldOutputs, newInputs, prov, allowUnknowns, ignoreChanges)
 }
 
-// diffResource invokes the Diff function for the given custom resource's provider and returns the result.
-func diffResource(urn resource.URN, id resource.ID, oldInputs, oldOutputs,
+// DiffResource invokes the Diff function for the given custom resource's provider and returns the result.
+func DiffResource(urn resource.URN, id resource.ID, oldInputs, oldOutputs,
 	newInputs resource.PropertyMap, prov plugin.Provider, allowUnknowns bool,
 	ignoreChanges []string) (plugin.DiffResult, error) {
 
