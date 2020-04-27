@@ -884,7 +884,7 @@ func (s *ImportStep) Apply(preview bool) (resource.Status, StepCompleteFunc, err
 	s.new.Inputs = inputs
 
 	// Diff the user inputs against the provider inputs. If there are any differences, fail the import.
-	diff, err := diffResource(s.new.URN, s.new.ID, s.old.Inputs, s.old.Outputs, s.new.Inputs, prov, preview,
+	diff, err := DiffResource(s.new.URN, s.new.ID, s.old.Inputs, s.old.Outputs, s.new.Inputs, prov, preview,
 		s.ignoreChanges)
 	if err != nil {
 		return rst, nil, err

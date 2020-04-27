@@ -168,7 +168,7 @@ func newImportCmd() *cobra.Command {
 				}
 			}
 			if read.Outputs == nil {
-				return rst, nil, errors.Errorf("resource '%v' does not exist", s.new.ID)
+				return errors.Errorf("resource '%v' does not exist", id)
 			}
 			if read.Inputs == nil {
 				return errors.Errorf(
@@ -176,7 +176,7 @@ func newImportCmd() *cobra.Command {
 					urn.Type().Package())
 			}
 
-			state := resource.NewState(urn.Type(), urn, true, false, id, read.Inputs, read.Outputs,
+			state := resource.NewState(urn.Type(), urn, true, false, id, resource.PropertyMap{}, read.Outputs,
 				stackResource.URN, true, false, nil, initErrors, "",
 				nil, false, nil, nil, nil, "")
 
@@ -184,13 +184,6 @@ func newImportCmd() *cobra.Command {
 			old := resource.NewState(state.Type, state.URN, state.Custom, false, state.ID, read.Inputs, read.Outputs,
 				state.Parent, state.Protect, false, state.Dependencies, state.InitErrors, state.Provider,
 				state.PropertyDependencies, false, nil, nil, &state.CustomTimeouts, state.ImportID)
-
-			// Check the user inputs using the provider inputs for defaults.
-			inputs, failures, err := prov.Check(state.URN, old.Inputs, state.Inputs, preview)
-			if err != nil {
-				return err
-			}
-			state.Inputs = inputs
 
 			// Diff the user inputs against the provider inputs. If there are any differences, fail the import.
 			diff, err := deploy.DiffResource(state.URN, state.ID, old.Inputs, old.Outputs, state.Inputs, prov, false, nil)
@@ -205,14 +198,14 @@ func newImportCmd() *cobra.Command {
 						continue
 					}
 
-					source := s.old.Outputs
+					source := old.Outputs
 					if pdiff.InputDiff {
-						source = s.old.Inputs
+						source = old.Inputs
 					}
 
 					if old, ok := elements.Get(resource.NewObjectProperty(source)); ok {
 						// Ignore failure here.
-						elements.Add(resource.NewObjectProperty(s.new.Inputs), old)
+						elements.Add(resource.NewObjectProperty(state.Inputs), old)
 					}
 				}
 			}
