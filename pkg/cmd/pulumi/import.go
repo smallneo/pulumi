@@ -25,6 +25,8 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/pulumi/pulumi/pkg/v2/backend/display"
+	"github.com/pulumi/pulumi/pkg/v2/codegen/dotnet"
+	gogen "github.com/pulumi/pulumi/pkg/v2/codegen/go"
 	"github.com/pulumi/pulumi/pkg/v2/codegen/hcl2"
 	"github.com/pulumi/pulumi/pkg/v2/codegen/nodejs"
 	"github.com/pulumi/pulumi/pkg/v2/codegen/python"
@@ -65,6 +67,10 @@ func newImportCmd() *cobra.Command {
 
 			var programGenerator func(p *hcl2.Program) (map[string][]byte, hcl.Diagnostics, error)
 			switch project.Runtime.Name() {
+			case "dotnet":
+				programGenerator = dotnet.GenerateProgram
+			case "go":
+				programGenerator = gogen.GenerateProgram
 			case "nodejs":
 				programGenerator = nodejs.GenerateProgram
 			case "python":
@@ -176,9 +182,13 @@ func newImportCmd() *cobra.Command {
 					urn.Type().Package())
 			}
 
+			stackURN := resource.URN("")
+			if stackResource != nil {
+				stackURN = stackResource.URN
+			}
+
 			state := resource.NewState(urn.Type(), urn, true, false, id, resource.PropertyMap{}, read.Outputs,
-				stackResource.URN, true, false, nil, initErrors, "",
-				nil, false, nil, nil, nil, "")
+				stackURN, true, false, nil, initErrors, "", nil, false, nil, nil, nil, "")
 
 			// Magic up an old state so we can perform a diff.
 			old := resource.NewState(state.Type, state.URN, state.Custom, false, state.ID, read.Inputs, read.Outputs,

@@ -31,7 +31,7 @@ func GenerateLanguageDefinition(w io.Writer, host plugin.Host, gen LanguageGener
 	}
 	contract.Assert(len(parser.Diagnostics) == 0)
 
-	program, diags, err := hcl2.BindProgram(parser.Files, host)
+	program, diags, err := hcl2.BindProgram(parser.Files, hcl2.PluginHost(host))
 	if err != nil {
 		return err
 	}
